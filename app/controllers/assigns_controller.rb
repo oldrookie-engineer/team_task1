@@ -24,7 +24,7 @@ class AssignsController < ApplicationController
   def assign_params
     params[:email]
   end
-
+# binding.pry
   def assign_destroy(assign, assigned_user)
     if assigned_user == assign.team.owner
       I18n.t('views.messages.cannot_delete_the_leader')
@@ -37,11 +37,11 @@ class AssignsController < ApplicationController
       I18n.t('views.messages.cannot_delete_member_4_some_reason')
     end
   end
-  
+
   def email_reliable?(address)
     address.match(/\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i)
   end
-  
+
   def set_next_team(assign, assigned_user)
     another_team = Assign.find_by(user_id: assigned_user.id).team
     change_keep_team(assigned_user, another_team) if assigned_user.keep_team_id == assign.team_id
