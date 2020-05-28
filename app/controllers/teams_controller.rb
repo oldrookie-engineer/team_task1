@@ -1,6 +1,6 @@
 class TeamsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_team, only: %i[show edit update destroy]
+  before_action :set_team, only: %i[show edit update destroy change_owner]
 
   def index
     @teams = Team.all
@@ -9,6 +9,14 @@ class TeamsController < ApplicationController
   def show
     @working_team = @team
     change_keep_team(current_user, @team)
+  end
+
+  def change_owner
+    @assign = Assign.find(params[:assign])
+    if @team.update(owner_id: @assign.user.id)
+      ChangeOwnerMailer.change_owner_mail(@assign).deliver
+      redirect_to @team, notice: 'チームリーダーの権限を移動しました！'
+    end
   end
 
   def new
@@ -56,4 +64,5 @@ class TeamsController < ApplicationController
   def team_params
     params.fetch(:team, {}).permit %i[name icon icon_cache owner_id keep_team_id]
   end
+
 end
